@@ -21,6 +21,22 @@ const VideoCarousel = () => {
   });
   const { isEnd, startPlay, videoId, isLastVideo, isPlaying } = video;
 
+  useGSAP(() => {
+    gsap.to("#video", {
+      scrollTrigger: {
+        trigger: "#video",
+        toggleActions: "restart none none none",
+      },
+      onComplete: () => {
+        setVideo((prevVideo) => ({
+          ...prevVideo,
+          startPlay: true,
+          isPlaying: true,
+        }));
+      },
+    });
+  }, [isEnd, videoId]);
+
   useEffect(() => {
     if (loadedData.length > 3) {
       if (!isPlaying) {
@@ -30,6 +46,9 @@ const VideoCarousel = () => {
       }
     }
   }, [startPlay, videoId, isPlaying, loadedData]);
+
+  const handleLoadedMetadata = (i, e) =>
+    setLoadedData((prev) => ({ ...prev, e }));
 
   //to play videos
   useEffect(() => {
@@ -47,10 +66,35 @@ const VideoCarousel = () => {
 
   const handleProcess = (type, i) => {
     switch (type) {
+      case "video-end":
+        setVideo((prevVideo) => ({
+          ...prevVideo,
+          isEnd: true,
+          videoId: i + 1,
+        }));
+        break;
+
+      case "video-last":
+        setVideo((prevVideo) => ({ ...prevVideo, isLastVideo: true }));
+        break;
+
       case "video-reset":
+        setVideo((prevVideo) => ({
+          ...prevVideo,
+          isLastVideo: false,
+          videoId: 0,
+        }));
+        break;
+
+      case "play":
+        setVideo((prevVideo) => ({
+          ...prevVideo,
+          isPlaying: !prevVideo.isPlaying,
+        }));
+        break;
 
       default:
-        break;
+        return video;
     }
   };
 
@@ -73,6 +117,7 @@ const VideoCarousel = () => {
                       isPlaying: true,
                     }));
                   }}
+                  onLoadedMetadata={(e) => handleLoadedMetadata(i, e)}
                 >
                   <source src={list.video} type="video/mp4" />
                 </video>
