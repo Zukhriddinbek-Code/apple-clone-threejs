@@ -1,5 +1,32 @@
-const ModelView = () => {
-  return <div>ModelView</div>;
+/* eslint-disable react/prop-types */
+
+import { PerspectiveCamera, View } from "@react-three/drei";
+import { AmbientLight } from "three";
+
+/* eslint-disable no-unused-vars */
+const ModelView = ({
+  index,
+  groupRef,
+  gsapType,
+  setRotationSize,
+  controlRef,
+  size,
+  item,
+}) => {
+  return (
+    <View
+      index={index}
+      id={gsapType}
+      className={`border-2 border-red-500 w-full h-full ${
+        index === 2 ? "right-[-100%]" : ""
+      }`}
+    >
+      {/* ambient light */}
+      <AmbientLight intensity={0.3} />
+
+      <PerspectiveCamera makeDefault position={[0, 0, 4]} />
+    </View>
+  );
 };
 
 export default ModelView;
